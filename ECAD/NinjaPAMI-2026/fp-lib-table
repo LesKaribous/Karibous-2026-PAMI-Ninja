@@ -1,0 +1,7 @@
+(fp_lib_table
+  (version 7)
+  (lib (name "TMC2209_SILENTSTEPSTICK")(type "KiCad")(uri "${KIPRJMOD}/Libraries/TMC2209_SILENTSTEPSTICK")(options "")(descr ""))
+  (lib (name "footprints")(type "KiCad")(uri "${KIPRJMOD}/Libraries/Switch")(options "")(descr ""))
+  (lib (name "PAMI-2025")(type "KiCad")(uri "${KIPRJMOD}/Libraries/PAMI-2025.pretty")(options "")(descr ""))
+  (lib (name "xiao ESP32S3 Plus_PCB")(type "KiCad")(uri "${KIPRJMOD}/Libraries/Seeed Studio XIAO ESP32S3 Plus KiCAD Library 2/xiao ESP32S3 Plus_PCB.pretty")(options "")(descr ""))
+)
