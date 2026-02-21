@@ -37,9 +37,9 @@
         "other_text_thickness": 0.15,
         "other_text_upright": false,
         "pads": {
-          "drill": 1.0,
-          "height": 2.3,
-          "width": 1.5
+          "drill": 1.19,
+          "height": 2.19,
+          "width": 1.74
         },
         "silk_line_width": 0.1,
         "silk_text_italic": false,
@@ -195,8 +195,11 @@
         0.2,
         0.4,
         0.5,
+        0.6,
+        0.7,
         0.8,
         1.0,
+        1.6,
         1.8
       ],
       "tuning_pattern_settings": {
@@ -540,7 +543,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "NinjaPAMI-2026.step",
+      "step": "NinjaPAMI-2026.glb",
       "svg": "",
       "vrml": "NinjaPAMI-2026.wrl"
     },
