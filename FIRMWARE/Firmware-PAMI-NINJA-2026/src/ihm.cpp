@@ -2,7 +2,12 @@
 #include "ihm.h"
 
 #define I2C_ADDR_LEFT_SCREEN 0x3C
-#define I2C_ADDR_RIGHT_SCREEN_2 0x3D
+#define I2C_ADDR_RIGHT_SCREEN 0x3D
+
+// --- Configuration des Écrans OLED ---
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_RESET    -1 
 
 // Initialisation des variables
 bool team = TEAM_BLUE;
@@ -69,7 +74,6 @@ Note melody1[] = {
   {DRUM_KICK, 8}, {NOTE_REST, 8}, {DRUM_SNARE, 8}, {NOTE_REST, 8}
 };
 
-
 // Appui du Chant
 Note melody2[] = {
   {NOTE_REST, 16},  {NOTE_REST, 16},  {NOTE_REST, 16},  {NOTE_REST, 16},  // Never gonna
@@ -135,8 +139,8 @@ const int resolution = 8;
 
 //U8G2_SSD1306_128X32_UNIVISION_F_HW_I2C u8g2(U8G2_R0); //HW stand for "Hardware"... You idiot
 
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C leftScreen(U8G2_R3, U8X8_PIN_NONE);
-U8G2_SSD1306_128X64_NONAME_F_HW_I2C rightScreen(U8G2_R1, U8X8_PIN_NONE);
+Adafruit_SSD1306 displayLeft(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+Adafruit_SSD1306 displayRight(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 Adafruit_NeoPixel led = Adafruit_NeoPixel(1, ledStatus, NEO_GRB + NEO_KHZ800);
 
@@ -169,17 +173,28 @@ void initIHM(){
 }
 
 void initLCD() {
-  leftScreen.setI2CAddress(0x3C << 1);
-  rightScreen.setI2CAddress(0x3D << 1);
+  // Initialisation des écrans OLED
+  if(!displayLeft.begin(SSD1306_SWITCHCAPVCC, I2C_ADDR_LEFT_SCREEN)) {
+    Serial.println(F("Echec initialisation OLED 1 (0x3C)"));
+  } else {
+    displayLeft.clearDisplay();
+    displayLeft.setTextSize(1);
+    displayLeft.setTextColor(SSD1306_WHITE);
+    displayLeft.setCursor(0,0);
+    displayLeft.println(F("OLED 1 OK"));
+    displayLeft.display();
+  }
 
-  leftScreen.begin();
-  rightScreen.begin();
-
-  leftScreen.clearBuffer();
-  leftScreen.sendBuffer();
-
-  rightScreen.clearBuffer();
-  rightScreen.sendBuffer();
+  if(!displayRight.begin(SSD1306_SWITCHCAPVCC, I2C_ADDR_RIGHT_SCREEN)) {
+    Serial.println(F("Echec initialisation OLED 2 (0x3D)"));
+  } else {
+    displayRight.clearDisplay();
+    displayRight.setTextSize(1);
+    displayRight.setTextColor(SSD1306_WHITE);
+    displayRight.setCursor(0,0);
+    displayRight.println(F("OLED 2 OK"));
+    displayRight.display();
+  }
 }
 
 void initBuzzer(){
@@ -316,31 +331,61 @@ void pairingScreen(){
 */
 
 void drawSplashScreen(){
-  leftScreen.clearBuffer();
-  leftScreen.setFont(u8g2_font_streamline_hand_signs_t);
-  leftScreen.drawGlyphX2(0,42,0x003D); // Draw hand
-  // Mettre à jour l'écran
-  leftScreen.sendBuffer();
-  delay(300);
+  displayLeft.clearDisplay();
   // Draw Text
-  leftScreen.setFont(u8g2_font_t0_22b_mf);
-  leftScreen.drawStr(49, 13, "PAMI NINJA");
-  leftScreen.setFont(u8g2_font_5x7_mf);
-  leftScreen.drawStr(50, 21, "Les Karibous");
+  displayLeft.setCursor(49, 13);
+  displayLeft.println(F("PAMI NINJA"));
+  displayLeft.setCursor(50, 21);
+  displayLeft.println(F("Les Karibous"));
   // Créer une String avec la date et l'heure de compilation
-  leftScreen.setFont(u8g2_font_tiny5_tf);
   String compileDateTime = String(__DATE__) + " " + String(__TIME__);
-  leftScreen.drawStr(50, 30, compileDateTime.c_str());
+  displayLeft.setCursor(50, 30);
+  displayLeft.println(compileDateTime);
+  displayLeft.display();
+  delay(2000);
+  displayLeft.clearDisplay();
+  //leftScreen.clearBuffer();
+  //leftScreen.setFont(u8g2_font_streamline_hand_signs_t);
+  //leftScreen.drawGlyphX2(0,42,0x003D); // Draw hand
   // Mettre à jour l'écran
-  leftScreen.sendBuffer();
+  //leftScreen.sendBuffer();
+  //delay(300);
+  // Draw Text
+  //leftScreen.setFont(u8g2_font_t0_22b_mf);
+  //leftScreen.drawStr(49, 13, "PAMI NINJA");
+  //leftScreen.setFont(u8g2_font_5x7_mf);
+  //leftScreen.drawStr(50, 21, "Les Karibous");
+  // Créer une String avec la date et l'heure de compilation
+  //leftScreen.setFont(u8g2_font_tiny5_tf);
+  //String compileDateTime = String(__DATE__) + " " + String(__TIME__);
+  //leftScreen.drawStr(50, 30, compileDateTime.c_str());
+  // Mettre à jour l'écran
+  //leftScreen.sendBuffer();
   //delay(2000);
   //playStartupMelody();
-  leftScreen.clearBuffer();
+  //leftScreen.clearBuffer();
 }
 
 void drawBackLcd(){
   //--------------------------------------------------------
   // Draw Bot Number
+  displayLeft.clearDisplay();
+  //displayLeft.setFont(&FreeSans9pt7b);
+  displayLeft.setCursor(0, 13);
+  displayLeft.println(F("Bot"));
+  //displayLeft.setFont(&FreeSansBold18pt7b);
+  displayLeft.setCursor(14, 13);
+  displayLeft.println(F("Ninja"));
+  // Draw separators
+  displayLeft.drawLine(0,18,128,18, SSD1306_WHITE);
+  displayLeft.drawLine(50,15,50,0,  SSD1306_WHITE);
+  // Debug texte
+  //displayLeft.setFont(&FreeSans9pt7b); // Mini font for debug 
+  displayLeft.setCursor(0, 31);
+  displayLeft.println(F("Debug:"));
+  // Mettre à jour l'écran
+  displayLeft.display();
+  /*
   leftScreen.setFont(u8g2_font_5x7_mf);
   leftScreen.drawStr(0, 13, "bot");
   leftScreen.setFont(u8g2_font_t0_22b_mf);
@@ -353,6 +398,7 @@ void drawBackLcd(){
   leftScreen.drawStr(0, 31, "debug: ");
   // Mettre à jour l'écran
   leftScreen.sendBuffer();
+  */
 }
 
 bool initEspNow(){
@@ -452,45 +498,58 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   Serial.println();
 }
 
-void debugLCD(String message, u8g2_uint_t _y){
-  leftScreen.setFont(u8g2_font_5x7_mf); // Mini font for debug - 6 heigh monospace
+void debugLCD(String message){
+  debugLCD(message, 42);
+}
+
+void debugLCD(String message, int16_t _y){
+  displayLeft.setTextSize(1);
+  displayLeft.setTextColor(SSD1306_WHITE);
+  //leftScreen.setFont(u8g2_font_5x7_mf); // Mini font for debug - 6 heigh monospace
   drawLCD(message, 35, _y);
 }
 
-void infoLCD(String message, u8g2_uint_t _y){
-  leftScreen.setFont(u8g2_font_5x7_mf); // Mini font for debug - 6 heigh monospace
+void infoLCD(String message, int16_t _y){
+  displayLeft.setTextSize(1);
+  displayLeft.setTextColor(SSD1306_WHITE);
+  //leftScreen.setFont(u8g2_font_5x7_mf); // Mini font for debug - 6 heigh monospace
   //leftScreen.setFont(u8g2_font_ncenB08_tr);
   drawLCD(message, 55, _y);
 }
 
-void drawLCD(String message, u8g2_uint_t _x, u8g2_uint_t _y){
+void drawLCD(String message, int16_t _x, int16_t _y){
     const char* cstr = message.c_str();
 
     // Calculez la largeur et la hauteur de la chaîne à afficher
     //u8g2_uint_t width = u8g2.getStrWidth(cstr);
-    u8g2_uint_t width = 128;
-    u8g2_uint_t height = leftScreen.getMaxCharHeight();
+    int16_t width = 128;
+    int16_t height = 8; //displayLeft.getTextBounds * 8; // La hauteur d'une ligne de texte est généralement de 8 pixels multipliée par la taille du texte
+    //int16_t height = leftScreen.getMaxCharHeight();
 
     // Position où le texte sera dessiné
-    u8g2_uint_t x = _x;
-    u8g2_uint_t y = _y;
+    int16_t x = _x;
+    int16_t y = _y;
 
     // Effacez seulement la zone où le texte sera dessiné
-    leftScreen.setDrawColor(0); // Couleur de fond pour "effacer"
-    leftScreen.drawBox(x, y - height, width, height);
-    leftScreen.setDrawColor(1); // Couleur de dessin pour le texte
+    displayLeft.fillRect(x, y - height, width, height, SSD1306_BLACK); // Efface la zone du texte
+    //leftScreen.setDrawColor(0); // Couleur de fond pour "effacer"
+    //leftScreen.drawBox(x, y - height, width, height);
+    //leftScreen.setDrawColor(1); // Couleur de dessin pour le texte
 
     // Dessinez le texte
-    leftScreen.drawStr(x, y, cstr);
+    displayLeft.setCursor(x, y);
+    displayLeft.println(cstr);
+    //leftScreen.drawStr(x, y, cstr);
 
     // Mettre à jour l'écran
-    leftScreen.sendBuffer();
+    displayLeft.display();
+    //leftScreen.sendBuffer();
 }
 
 
 void debug(String message){
   if (modeDebug) Serial.println(message);
-  if (modeDebugLCD) debugLCD(message);
+  //if (modeDebugLCD) debugLCD(message);
 }
 
 bool checkColorTeam(){

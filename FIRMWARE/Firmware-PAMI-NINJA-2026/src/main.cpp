@@ -38,7 +38,7 @@ void setup()
   disableMotors();
   armsDown();
 
-  while(1) readSensors(true); // TODO : Test sensors
+  //while(1) readSensors(true); // TODO : Test sensors
 
   waitStart();
 }

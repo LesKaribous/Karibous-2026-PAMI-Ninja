@@ -3,7 +3,9 @@
 #define IHM_H
 
 #include <Arduino.h>
-#include <U8g2lib.h>
+//#include <U8g2lib.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include <Adafruit_NeoPixel.h>
 #include <Wire.h>
 #include <esp_now.h>
@@ -49,9 +51,9 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status);
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len);
 
 void debug(String message);
-void debugLCD(String message, u8g2_uint_t _y = 31);   // Affiche un message sur la ligne de debug (dessous)
-void infoLCD(String message,  u8g2_uint_t _y = 13);   // Affiche un message sur la ligne info (dessus)
-void drawLCD(String message, u8g2_uint_t _x, u8g2_uint_t _y); // Affiche un message et clear l'écran uniquement autour du message
+void debugLCD(String message, int16_t _y = 31);   // Affiche un message sur la ligne de debug (dessous)
+void infoLCD(String message, int16_t _y = 31);   // Affiche un message sur la ligne info (dessus)
+void drawLCD(String message, int16_t _x, int16_t _y); // Affiche un message et clear l'écran uniquement autour du message
 
 bool checkColorTeam();
 void initLedStatus();
