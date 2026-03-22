@@ -1,9 +1,10 @@
 // sensors.cpp
 #include "sensors.h"
 
-VL53L0X sensors[3];
+Adafruit_VL53L0X sensors[3];
 uint16_t sensorsValue[3];
 bool sensorsState[3];
+bool sensorReady[3] = {false, false, false}; // Suit l'état d'initialisation de chaque capteur
 uint16_t sensor1 = 0;
 uint16_t sensor2 = 0;
 uint16_t sensor3 = 0;
@@ -15,50 +16,37 @@ bool debugSensor = false; // Mettre son robot en mode debug : oui / Mettre son r
 const float alpha = 0.2; // entre 0 (très lissé) et 1 (aucun lissage)
 const int threshold = 200; // valeur max de variation tolérée
 
-void initSensor()
-{
-    Wire.begin();
-    // Disable/reset all sensors by driving their XSHUT pins low.
-    pinMode(xshutPins[0], OUTPUT);
-    pinMode(xshutPins[1], OUTPUT);
-    pinMode(xshutPins[2], OUTPUT);
-    digitalWrite(xshutPins[0], LOW);
-    digitalWrite(xshutPins[1], LOW);
-    digitalWrite(xshutPins[2], LOW);
+// Nouvelles adresses I2C à assigner aux capteurs (différentes de 0x29)
+const uint8_t sensorAddresses[3] = { 0x30, 0x31, 0x32 };
 
-    for (uint8_t i = 0; i < 3; i++)
-    {
-        // Stop driving this sensor's XSHUT low. This should allow the carrier
-        // board to pull it high. (We do NOT want to drive XSHUT high since it is
-        // not level shifted.) Then wait a bit for the sensor to start up.
-        pinMode(xshutPins[i], INPUT);
-        delay(10);
+void initSensor() {
 
-        sensors[i].setTimeout(500);
-        if (!sensors[i].init())
-        {
-            Serial.print("Failed to detect and initialize sensor ");
-            Serial.println(i);
-            // while (1);
-        }
-        else
-        {
-            Serial.print("Sensor ");
-            Serial.print(i);
-            Serial.println(" initialized");
-        }
+  //Réinitialisation matérielle (Hard Reset) de tous les capteurs
+  for (uint8_t i = 0; i < 3; i++) {
+    pinMode(xshutPins[i], OUTPUT);
+    digitalWrite(xshutPins[i], LOW);
+  }
+  delay(100); // Délai de décharge
 
-        // Each sensor must have its address changed to a unique value other than
-        // the default of 0x29 (except for the last one, which could be left at
-        // the default). To make it simple, we'll just count up from 0x2A.
-        sensors[i].setAddress(0x2A + i);
+  // Séquence d'activation et d'adressage des capteurs
+  for (uint8_t i = 0; i < 3; i++) {
+    // Réveil du capteur cible
+    digitalWrite(xshutPins[i], HIGH);
+    delay(50); // Temps d'amorçage du firmware interne
 
-        sensors[i].startContinuous();
-        //sensors[i].setMeasurementTimingBudget(2000); // Non utilisé 
-        sensors[i].setSignalRateLimit(0.3); // Default 0.25
-        sensorsValue[i] = 0; //Init sensor value
+    // La méthode begin() d'Adafruit gère le changement d'adresse
+    if (!sensors[i].begin(sensorAddresses[i])) {
+      Serial.print(F("Echec initialisation capteur "));
+      Serial.println(i);
+      sensorReady[i] = false; // Marqué comme défaillant
+    } else {
+      Serial.print(F("Capteur "));
+      Serial.print(i);
+      Serial.print(F(" initialise a l'adresse 0x"));
+      Serial.println(sensorAddresses[i], HEX);
+      sensorReady[i] = true;  // Marqué comme opérationnel
     }
-    previousTime = millis();
+  }
 }
 
 bool readSensors(bool setDebug)
@@ -88,28 +76,33 @@ bool readSensors(bool setDebug)
 
 bool readSensor(int sensorNumber, bool setDebug){
 
+    VL53L0X_RangingMeasurementData_t measure;
+
     bool state = true;
     uint16_t tempValue = 0;
     bool timeoutState = false;
     bool maxValueReached =false;
 
-    tempValue = sensors[sensorNumber].readRangeContinuousMillimeters();
+    if (sensorReady[sensorNumber]) {
+        sensors[sensorNumber].rangingTest(&measure, false);
+        if (measure.RangeStatus != 4) { 
+            tempValue = measure.RangeMilliMeter;
+            timeoutState = sensors[sensorNumber].timeoutOccurred();
+            maxValueReached = tempValue >= MAX_SENSOR_VALUE;
 
-    timeoutState = sensors[sensorNumber].timeoutOccurred();
-    maxValueReached = tempValue >= MAX_SENSOR_VALUE;
+            if (timeoutState || maxValueReached ) state = false;
+            else sensorsValue[sensorNumber] = tempValue ;
+        
+            sensorsState[sensorNumber] = state ;
 
-    if (timeoutState || maxValueReached ) state = false;
-    else sensorsValue[sensorNumber] = tempValue ;
-    
-    sensorsState[sensorNumber] = state ;
-
-    if (setDebug){
-        if (timeoutState)debugLCD("TIMEOUT");
-        if (maxValueReached)debugLCD("MAXVALUE");
+            if (setDebug){
+                if (timeoutState)debugLCD("TIMEOUT");
+                if (maxValueReached)debugLCD("MAXVALUE");
+            }
+        }
     }
     return state;
 }
-
 
 
 bool checkOpponent(uint16_t distance)

@@ -30,7 +30,7 @@ const int pinServo01  = 13;
 const int pinServo02  = 9;
 
 // Pins Sensors
-const int xshutPins[3] = { 44,10,43 };
+const int xshutPins[3] = { 44, 10, 43 };
 
 // Pins EV pump
 const int pinPump01 = 11;

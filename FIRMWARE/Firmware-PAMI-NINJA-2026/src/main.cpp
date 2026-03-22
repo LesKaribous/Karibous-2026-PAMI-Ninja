@@ -6,7 +6,7 @@
 #include "motion.h"
 #include "match.h"
 
-void scanI2CDevices();
+void scanI2C();
 void waitStart();
 void datumPosition(int teamColor);
 void match();
@@ -17,9 +17,18 @@ void setup()
   delay (2000); // Attendre que tout soit stable
   initBuzzer();
   
+  //init wire 
+  Wire.begin(I2C_SDA, I2C_SCL);
+  //Wire.setClock(100000);
+  Wire.setTimeOut(150);
+  delay(1000);
+
   initIHM();
   initSensor();
+  scanI2C();
+  
   initMotion();
+  
   initActuators();
 
   drawSplashScreen();
@@ -29,7 +38,7 @@ void setup()
   disableMotors();
   armsDown();
 
-  //while(1) readSensors(true); // TODO : Test sensors
+  while(1) readSensors(true); // TODO : Test sensors
 
   waitStart();
 }
@@ -40,37 +49,29 @@ void loop()
   match();
 }
 
-void scanI2CDevices()
-{
+// --- Déclaration de la fonction du Scanner I2C ---
+void scanI2C() {
   byte error, address;
-  int count = 0;
-
-  Serial.println("Recherche des peripheriques I2C...");
-
+  int nDevices = 0;
+  Serial.println(F("\n--- Diagnostic du Bus I2C ---"));
   for (address = 1; address < 127; address++) {
     Wire.beginTransmission(address);
     error = Wire.endTransmission();
-
     if (error == 0) {
-      Serial.print("Peripherique trouve a l'adresse 0x");
+      Serial.print(F("Composant I2C detecte a l'adresse 0x"));
       if (address < 16) Serial.print("0");
       Serial.println(address, HEX);
-      count++;
-    } 
-    else if (error == 4) {
-      Serial.print("Erreur inconnue a l'adresse 0x");
+      nDevices++;
+    } else if (error == 4) {
+      Serial.print(F("Erreur inconnue a l'adresse 0x"));
       if (address < 16) Serial.print("0");
       Serial.println(address, HEX);
     }
   }
-
-  if (count == 0) {
-    Serial.println("Aucun peripherique I2C trouve.");
-  } else {
-    Serial.println("Scan termine.");
-  }
-
-  delay(3000);
+  Serial.print(F("Total : "));
+  Serial.print(nDevices);
+  Serial.println(F(" peripherique(s) detecte(s)."));
+  Serial.println(F("-----------------------------\n"));
 }
 
 void waitStart()

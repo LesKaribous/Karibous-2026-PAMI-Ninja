@@ -4,7 +4,8 @@
 
 #include <Arduino.h>
 #include <Wire.h>
-#include <VL53L0X.h>
+#include <Adafruit_VL53L0X.h>
+//#include <VL53L0X.h>
 
 #include "pins.h" 
 #include "ihm.h" 

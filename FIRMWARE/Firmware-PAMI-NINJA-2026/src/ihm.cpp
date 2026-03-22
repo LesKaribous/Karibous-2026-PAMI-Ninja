@@ -7,7 +7,7 @@
 // Initialisation des variables
 bool team = TEAM_BLUE;
 bool teamSelected = false;
-bool modeDebug = false; // Mettre son robot en mode debug : oui / Mettre son robot en mode "des bugs" : Non - HistoriCode97 - 03/12/2023
+bool modeDebug = true; // Mettre son robot en mode debug : oui / Mettre son robot en mode "des bugs" : Non - HistoriCode97 - 03/12/2023
 bool modeDebugLCD = true;
 byte robotNumber;
 int robotState = UNDEFINED;
@@ -160,7 +160,7 @@ void initIHM(){
     pinMode(ColorTeam,INPUT_PULLUP);
     pinMode(Tirette,INPUT_PULLUP);
     // Init functions
-    Wire.begin(I2C_SDA, I2C_SCL);
+    //Wire.begin(I2C_SDA, I2C_SCL);
     Serial.begin(115200);
     initLedStatus();
     initLCD();
@@ -515,7 +515,7 @@ bool checkColorTeam(){
 
 void initLedStatus(){
   led.begin();
-  led.setBrightness(100);
+  led.setBrightness(10);
   led.setPixelColor(0,led.Color(255,255,255));
   led.show();
 }

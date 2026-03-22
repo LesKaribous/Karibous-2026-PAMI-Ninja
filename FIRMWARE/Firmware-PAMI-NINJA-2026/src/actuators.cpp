@@ -14,12 +14,14 @@ void initActuators() {
         544,
         2400
     );
+    delay(250);
 
     servoArmRight.attach(
         pinServo02,
         544,
         2400
     );
+    delay(250);
 }
 
 void leftUp(){
