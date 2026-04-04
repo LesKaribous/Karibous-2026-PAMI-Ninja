@@ -76,20 +76,27 @@ void scanI2C() {
 
 void waitStart()
 {
+  unsigned long lastSlowUpdate = 0;
   // Attendre que la tirette ne soit plus présente
   infoLCD("Remove Tirette");
-  while (getTirette())
-  {
-    delay(250);
-    checkColorTeam();
+  while (getTirette()) {
+    updateEyes();
+
+    if (millis() - lastSlowUpdate >= 250) {
+      checkColorTeam();
+      lastSlowUpdate = millis();
+    }
   }
   playTirette();
   // Attendre que la tirette soit insérée
   infoLCD("Insert Tirette");
-  while (!getTirette())
-  {
-    delay(500);
-    checkColorTeam();
+  while (!getTirette()) {
+    updateEyes();
+
+    if (millis() - lastSlowUpdate >= 500) {
+      checkColorTeam();
+      lastSlowUpdate = millis();
+    }
   }
   playTirette();
   // Datum position du PAMI
@@ -100,13 +107,21 @@ void waitStart()
   delay(2000);
   // Attendre que la tirette soit bien insérée pour éviter les faux-départs
   infoLCD("Insert Tirette");
-  while (!getTirette())
-    delay(500);
+  while (!getTirette()) {
+    updateEyes();
+    if (millis() - lastSlowUpdate >= 500) {
+      lastSlowUpdate = millis();
+    }
+  }
   playTirette();
   // Attendre que la tirette soit retirée pour débuter le match
   infoLCD("Wait Start");
-  while (getTirette())
-    delay(250);
+  while (getTirette()) {
+    updateEyes();
+    if (millis() - lastSlowUpdate >= 250) {
+      lastSlowUpdate = millis();
+    }
+  }
   playTirette();
   // Le match commence
   setRobotState(MATCH_STARTED);

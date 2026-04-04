@@ -1,5 +1,6 @@
 // ihm.cpp
 #include "ihm.h"
+#include <FluxGarage_RoboEyes.h>
 
 #define I2C_ADDR_LEFT_SCREEN 0x3C
 #define I2C_ADDR_RIGHT_SCREEN 0x3D
@@ -23,6 +24,10 @@ unsigned long noteStartTime = 0;
 bool noteIsPlaying = false;
 unsigned long noteDurationMs = 0;
 int tempo = 114;
+
+// Variables pour les yeux
+unsigned long idleTimer = 0;
+int idleInterval = 2000; // ms
 
 struct Note {
   int frequency;
@@ -142,6 +147,9 @@ const int resolution = 8;
 Adafruit_SSD1306 displayLeft(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 Adafruit_SSD1306 displayRight(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+RoboEyes<Adafruit_SSD1306> roboEyesLeft(displayLeft); 
+RoboEyes<Adafruit_SSD1306> roboEyesRight(displayRight); 
+
 Adafruit_NeoPixel led = Adafruit_NeoPixel(1, ledStatus, NEO_GRB + NEO_KHZ800);
 
 // Définition variables pour ESPNow
@@ -168,6 +176,7 @@ void initIHM(){
     Serial.begin(115200);
     initLedStatus();
     initLCD();
+    initEyes();
     // Debug
     debug("PAMI Started");
 }
@@ -177,6 +186,7 @@ void initLCD() {
   if(!displayLeft.begin(SSD1306_SWITCHCAPVCC, I2C_ADDR_LEFT_SCREEN)) {
     Serial.println(F("Echec initialisation OLED 1 (0x3C)"));
   } else {
+    displayLeft.setRotation(3);
     displayLeft.clearDisplay();
     displayLeft.setTextSize(1);
     displayLeft.setTextColor(SSD1306_WHITE);
@@ -188,12 +198,78 @@ void initLCD() {
   if(!displayRight.begin(SSD1306_SWITCHCAPVCC, I2C_ADDR_RIGHT_SCREEN)) {
     Serial.println(F("Echec initialisation OLED 2 (0x3D)"));
   } else {
+    displayRight.setRotation(1);
     displayRight.clearDisplay();
     displayRight.setTextSize(1);
     displayRight.setTextColor(SSD1306_WHITE);
     displayRight.setCursor(0,0);
     displayRight.println(F("OLED 2 OK"));
     displayRight.display();
+  }
+}
+
+void initEyes(){
+  roboEyesLeft.begin(64, 128, 100);
+  roboEyesRight.begin(64, 128, 100);
+
+  roboEyesLeft.setWidth(36, 36);
+  roboEyesLeft.setHeight(36, 36);
+  roboEyesRight.setWidth(36, 36);
+  roboEyesRight.setHeight(36, 36);
+  roboEyesLeft.setBorderradius(8, 8);
+  roboEyesRight.setBorderradius(8, 8);
+
+  roboEyesLeft.setIdleMode(OFF);
+  roboEyesRight.setIdleMode(OFF);
+
+  roboEyesLeft.setCyclops(ON);
+  roboEyesRight.setCyclops(ON);
+
+  // Forcer la position centrée manuellement
+  // x = (screenWidth - eyeWidth) / 2 = (64 - 36) / 2 = 14
+  // y = (screenHeight - eyeHeight) / 2 = (128 - 28) / 2 = 50
+  int cx = (64 - 36) / 2;  // 14
+  int cy = (128 - 28) / 2; // 50
+
+  roboEyesLeft.eyeLx     = cx;  roboEyesLeft.eyeLxNext  = cx;
+  roboEyesLeft.eyeLy     = cy;  roboEyesLeft.eyeLyNext  = cy;
+  roboEyesRight.eyeLx    = cx;  roboEyesRight.eyeLxNext = cx;
+  roboEyesRight.eyeLy    = cy;  roboEyesRight.eyeLyNext = cy;
+
+  roboEyesLeft.setAutoblinker(ON, 3, 0);
+  roboEyesRight.setAutoblinker(ON, 3, 0);
+  roboEyesLeft.setMood(DEFAULT);
+  roboEyesRight.setMood(DEFAULT);
+
+  updateEyes();
+}
+
+void updateEyes(){
+  syncedIdleUpdate();
+  roboEyesLeft.update();
+  roboEyesRight.update();
+}
+
+void syncedIdleUpdate() {
+  if (millis() >= idleTimer) {
+    // Un seul random, appliqué aux deux yeux
+    int cx = (64 - 36) / 2;
+    int cy = (128 - 28) / 2;
+
+    // Variation autour du centre (±10px)
+    int dx = random(-10, 10);
+    int dy = random(-10, 10);
+
+    int nx = cx + dx;
+    int ny = cy + dy;
+
+    // Appliquer la même position aux deux
+    roboEyesLeft.eyeLxNext  = nx;
+    roboEyesLeft.eyeLyNext  = ny;
+    roboEyesRight.eyeLxNext = nx;
+    roboEyesRight.eyeLyNext = ny;
+
+    idleTimer = millis() + idleInterval + random(2000);
   }
 }
 

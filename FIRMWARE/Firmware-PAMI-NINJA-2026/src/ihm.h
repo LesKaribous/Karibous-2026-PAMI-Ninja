@@ -30,6 +30,9 @@
 // Déclaration des fonctions
 void initIHM();
 void initLCD();
+void initEyes();
+void syncedIdleUpdate();
+void updateEyes();
 void initBuzzer();
 void drawSplashScreen();
 void pairingScreen();
