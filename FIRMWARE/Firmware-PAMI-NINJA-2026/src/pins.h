@@ -26,8 +26,8 @@ const int ledStatus = 2;
 const int Buzzer = 1;
 
 // Pins servo
-const int pinServo01  = 13;
-const int pinServo02  = 9;
+const int pinServo01  = 9;
+const int pinServo02  = 13;
 
 // Pins Sensors
 const int xshutPins[3] = { 44, 10, 43 };
