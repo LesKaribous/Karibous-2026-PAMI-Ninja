@@ -11,15 +11,15 @@ void initActuators() {
 
     servoArmLeft.attach(
         pinServo01,
-        544,
-        2400
+        1000,
+        2000
     );
     delay(250);
 
     servoArmRight.attach(
         pinServo02,
-        544,
-        2400
+        1000,
+        2000
     );
     delay(250);
 }

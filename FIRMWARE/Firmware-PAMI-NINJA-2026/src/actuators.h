@@ -9,10 +9,10 @@
 #include "ihm.h"
 #include "match.h"
 
-#define ARM_UP_LEFT 120
-#define ARM_DOWN_LEFT 45
-#define ARM_UP_RIGHT 45
-#define ARM_DOWN_RIGHT 120
+#define ARM_UP_LEFT 130
+#define ARM_DOWN_LEFT 10
+#define ARM_UP_RIGHT 62
+#define ARM_DOWN_RIGHT 180
 
 // Déclaration des fonctions
 void initActuators();
