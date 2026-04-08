@@ -30,13 +30,15 @@ void setup()
   initMotion();
   
   initActuators();
+  armsDown();
+  delay(1000);
+  armsUp();
 
   drawSplashScreen();
   // pairingScreen();
   drawBackLcd();
 
   disableMotors();
-  armsDown();
 
   //while(1) readSensors(true); // TODO : Test sensors
 
@@ -131,12 +133,12 @@ void waitStart()
 }
 
 
-
 void datumPosition(int teamColor)
 {
   enableMotors();
   if (teamColor == TEAM_BLUE)
   {
+    /*
     // Datum at low Speed
     setMaxSpeed(DATUM_SPEED);
     setAcceleration(DATUM_ACCELERATION);
@@ -159,6 +161,7 @@ void datumPosition(int teamColor)
       goTo(3000 - 250, 100, 180);
       go(-150);
       setCurrentX(2900);
+    */
   }
   else if (teamColor == TEAM_YELLOW)
   {
@@ -166,23 +169,13 @@ void datumPosition(int teamColor)
     setMaxSpeed(DATUM_SPEED);
     setAcceleration(DATUM_ACCELERATION);
 
-    // Datum X
-    go(-100);
-    // Save X position and orientation
-    setCurrentX(CENTER_POSITION_MM);
-    setCurrentRot(0);
-    // Orientate robot
-    goTo(250, 0, 90);
-
-    go(-100);
-    // SaveY position
-    setCurrentY(CENTER_POSITION_MM);
-    setCurrentRot(90);
+    // Save Y position and orientation
+    setCurrentY(DATUM_DISTANCE_MM);
+    setCurrentX(615+DATUM_DISTANCE_MM);
+    setCurrentRot(135.0f);
 
     // Go to safe position
-      goTo(250, 100, 0);
-      go(-150);
-      setCurrentX(100);
+      goTo(715, 100, 90);
   }
 
   setMaxSpeed(MAX_SPEED);
