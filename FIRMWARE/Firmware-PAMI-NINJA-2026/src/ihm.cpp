@@ -212,6 +212,9 @@ void initEyes(){
   roboEyesLeft.begin(64, 128, 100);
   roboEyesRight.begin(64, 128, 100);
 
+  displayLeft.invertDisplay(true);
+  displayRight.invertDisplay(true);
+
   roboEyesLeft.setWidth(36, 36);
   roboEyesLeft.setHeight(36, 36);
   roboEyesRight.setWidth(36, 36);
