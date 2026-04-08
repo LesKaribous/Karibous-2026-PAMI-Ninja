@@ -11,7 +11,7 @@
 #include "match.h"
 
 #define STEPS_PER_REVOLUTION 200    // Nombre de pas par tour du moteur
-#define WHEEL_DIAMETER_MM 60.0f     // Diamètre de la roue en millimètres
+#define WHEEL_DIAMETER_MM 57.62f     // Diamètre de la roue en millimètres
 #define WHEEL_DISTANCE_MM 91.0f     // Distance entre les roues en millimètres
 
 #define MAX_SPEED       8000.0
@@ -23,7 +23,8 @@
 #define STOP_SPEED      25000.0
 #define STOP_ACCELERATION   6000.0
 
-#define CENTER_POSITION_MM 53       // Valeur entre l'arriere du robot et le centre des roues en millimètres
+#define CENTER_POSITION_MM 53.0       // Valeur entre l'arriere du robot et le centre des roues en millimètres
+#define DATUM_DISTANCE_MM 65.897     // Distance entre la position de datum et le centre du terrain en millimètres
 
 #define MOTION_WAIT 0
 #define MOTION_RUN 1

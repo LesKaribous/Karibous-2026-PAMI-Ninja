@@ -11,7 +11,7 @@ bool newPolarTarget = false;
 
 int motionState = MOTION_WAIT;
 
-int stepMultiplier = 16;
+int stepMultiplier = 8;
 float circumferenceMM = WHEEL_DIAMETER_MM * PI;
 
 // Variable Opponent
