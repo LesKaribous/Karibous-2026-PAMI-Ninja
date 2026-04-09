@@ -27,6 +27,19 @@ static float normalizeAngleDegrees(float angle){
   return angle;
 }
 
+static void computeApproachToTarget(float targetAngleDegrees, bool allowReverseApproach) {
+  // Rotation initiale pour s'aligner vers la cible.
+  targetMove.rotation1 = normalizeAngleDegrees(targetAngleDegrees - currentPose.rot);
+
+  // Sans orientation finale imposee, on peut reculer pour limiter la rotation.
+  if (allowReverseApproach && fabs(targetMove.rotation1) > 90.0f){
+    targetMove.rotation1 = normalizeAngleDegrees(targetMove.rotation1 + 180.0f);
+    targetMove.distance = -targetMove.distance;
+  }
+
+  tempTargetRotation = normalizeAngleDegrees(currentPose.rot + targetMove.rotation1);
+}
+
 void initMotion(){
   // Configure les pins
   pinMode(EN,OUTPUT);
@@ -120,15 +133,18 @@ void processMove(){
   long tempDistance_G = 0;
 
   long distanceToCheck = MIN_DISTANCE_MM;
+  const unsigned long opponentCheckIntervalMs = READ_TIME_PERIOD_MS;
+  unsigned long lastOpponentCheck = 0;
 
   debug("Processing Move...");
   while((motor_D.isRunning() || motor_G.isRunning())&& getMatchState() != PAMI_STOP){
     updateMotors();
-    if (opponentChecking){
+    if (opponentChecking && (millis() - lastOpponentCheck >= opponentCheckIntervalMs)){
       //distanceToCheck = convertStepToDist(motor_D.distanceToGo()); // TODO : Changer pour utiliser l'acceleration ou la vitesse ? 
       //debug ("check at" + String(distanceToCheck) + "mm");
 
       if (checkOpponent(distanceToCheck)){
+        lastOpponentCheck = millis();
         //debug ("Opponent at" + String(distanceToGo) + "mm");
 
         tempDistance_D = motor_D.distanceToGo();
@@ -159,6 +175,9 @@ void processMove(){
           motor_D.move(tempDistance_D);
           motor_G.move(tempDistance_G);
         }
+      }
+      else {
+        lastOpponentCheck = millis();
       }
     }
   }
@@ -196,17 +215,7 @@ void convertToPolar(float _x, float _y){
   float targetAngleDegrees = targetAngleRadians * (180.0f / M_PI);
 
   targetMove.distance = sqrt(dx*dx + dy*dy);
-
-  // Calculer la rotation la plus courte pour rotation1
-  targetMove.rotation1 = normalizeAngleDegrees(targetAngleDegrees - currentPose.rot);
-
-  // Si la cible est plus "derriere" que "devant", on recule pour limiter la rotation.
-  if (fabs(targetMove.rotation1) > 90.0f){
-    targetMove.rotation1 = normalizeAngleDegrees(targetMove.rotation1 + 180.0f);
-    targetMove.distance = -targetMove.distance;
-  }
-
-  tempTargetRotation = normalizeAngleDegrees(currentPose.rot + targetMove.rotation1);
+  computeApproachToTarget(targetAngleDegrees, true);
 
   targetMove.rotation2 = 0; // Pas de rotation finale
 
@@ -222,17 +231,7 @@ void convertToPolar(float _x, float _y, float _rot){
   float targetRotDegrees = _rot;
 
   targetMove.distance = sqrt(dx*dx + dy*dy);
-
-  // Calculer la rotation la plus courte pour rotation1
-  targetMove.rotation1 = normalizeAngleDegrees(targetAngleDegrees - currentPose.rot);
-
-  // Si la cible est plus "derriere" que "devant", on recule pour limiter la rotation.
-  if (fabs(targetMove.rotation1) > 90.0f){
-    targetMove.rotation1 = normalizeAngleDegrees(targetMove.rotation1 + 180.0f);
-    targetMove.distance = -targetMove.distance;
-  }
-
-  tempTargetRotation = normalizeAngleDegrees(currentPose.rot + targetMove.rotation1);
+  computeApproachToTarget(targetAngleDegrees, false);
 
   // Calculer la rotation la plus courte pour rotation2
   targetMove.rotation2 = normalizeAngleDegrees(targetRotDegrees - tempTargetRotation);
