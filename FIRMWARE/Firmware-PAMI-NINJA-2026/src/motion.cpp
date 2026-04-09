@@ -21,6 +21,12 @@ bool opponentChecking = false;
 AccelStepper motor_G(AccelStepper::DRIVER, STEP_G, DIR_G);
 AccelStepper motor_D(AccelStepper::DRIVER, STEP_D, DIR_D);
 
+static float normalizeAngleDegrees(float angle){
+  while (angle > 180.0f) angle -= 360.0f;
+  while (angle < -180.0f) angle += 360.0f;
+  return angle;
+}
+
 void initMotion(){
   // Configure les pins
   pinMode(EN,OUTPUT);
@@ -187,16 +193,20 @@ void convertToPolar(float _x, float _y){
   float dy = _y - currentPose.y;
 
   float targetAngleRadians = atan2(-dy, dx);
-  float currentRotRadians = currentPose.rot * (M_PI / 180.0f);
+  float targetAngleDegrees = targetAngleRadians * (180.0f / M_PI);
 
   targetMove.distance = sqrt(dx*dx + dy*dy);
 
   // Calculer la rotation la plus courte pour rotation1
-  targetMove.rotation1 = (targetAngleRadians - currentRotRadians) * (180.0f / M_PI);
-  if (targetMove.rotation1 > 180.0f) targetMove.rotation1 -= 360.0f;
-  if (targetMove.rotation1 < -180.0f) targetMove.rotation1 += 360.0f;
+  targetMove.rotation1 = normalizeAngleDegrees(targetAngleDegrees - currentPose.rot);
 
-  tempTargetRotation = targetAngleRadians * (180.0f / M_PI);
+  // Si la cible est plus "derriere" que "devant", on recule pour limiter la rotation.
+  if (fabs(targetMove.rotation1) > 90.0f){
+    targetMove.rotation1 = normalizeAngleDegrees(targetMove.rotation1 + 180.0f);
+    targetMove.distance = -targetMove.distance;
+  }
+
+  tempTargetRotation = normalizeAngleDegrees(currentPose.rot + targetMove.rotation1);
 
   targetMove.rotation2 = 0; // Pas de rotation finale
 
@@ -208,20 +218,24 @@ void convertToPolar(float _x, float _y, float _rot){
   float dy = _y - currentPose.y;
 
   float targetAngleRadians = atan2(-dy, dx);
-  float currentRotRadians = currentPose.rot * (M_PI / 180.0f);
-  float targetRotRadians = _rot * (M_PI / 180.0f);
+  float targetAngleDegrees = targetAngleRadians * (180.0f / M_PI);
+  float targetRotDegrees = _rot;
 
   targetMove.distance = sqrt(dx*dx + dy*dy);
 
   // Calculer la rotation la plus courte pour rotation1
-  targetMove.rotation1 = (targetAngleRadians - currentRotRadians) * (180.0f / M_PI);
-  if (targetMove.rotation1 > 180.0f) targetMove.rotation1 -= 360.0f;
-  if (targetMove.rotation1 < -180.0f) targetMove.rotation1 += 360.0f;
+  targetMove.rotation1 = normalizeAngleDegrees(targetAngleDegrees - currentPose.rot);
+
+  // Si la cible est plus "derriere" que "devant", on recule pour limiter la rotation.
+  if (fabs(targetMove.rotation1) > 90.0f){
+    targetMove.rotation1 = normalizeAngleDegrees(targetMove.rotation1 + 180.0f);
+    targetMove.distance = -targetMove.distance;
+  }
+
+  tempTargetRotation = normalizeAngleDegrees(currentPose.rot + targetMove.rotation1);
 
   // Calculer la rotation la plus courte pour rotation2
-  targetMove.rotation2 = (targetRotRadians - targetAngleRadians) * (180.0f / M_PI);
-  if (targetMove.rotation2 > 180.0f) targetMove.rotation2 -= 360.0f;
-  if (targetMove.rotation2 < -180.0f) targetMove.rotation2 += 360.0f;
+  targetMove.rotation2 = normalizeAngleDegrees(targetRotDegrees - tempTargetRotation);
 
   newPolarTarget = true;
 }
