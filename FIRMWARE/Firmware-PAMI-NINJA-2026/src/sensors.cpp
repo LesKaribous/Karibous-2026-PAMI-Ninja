@@ -111,6 +111,7 @@ bool checkOpponent(uint16_t distance)
     if (readSensors())
     {
         if (sensorsState[0] && sensorsValue[0] <= distance) detect = true;
+        if (sensorsState[1] && sensorsValue[0] <= distance) detect = true;
         if (sensorsState[2] && sensorsValue[2] <= distance) detect = true;
     }
     return detect;
