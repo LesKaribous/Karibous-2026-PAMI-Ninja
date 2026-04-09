@@ -21,7 +21,7 @@
 #define MAX_DISTANCE_MM 500
 // Sensors limit and parameters
 #define MAX_SENSOR_VALUE 8100 // Strange value at 8190
-#define READ_TIME_PERIOD_MS 100 // Before : 100
+#define READ_TIME_PERIOD_MS 250 // Lecture plus espacee pour moins perturber les moteurs
 // Filtrage
 #define NUM_READINGS 9             // Nombre de mesures à faire
 #define OUTLIERS_TO_REMOVE 2       // Nombre de valeurs extrêmes à retirer de chaque côté
