@@ -3,6 +3,8 @@
 #define SENSORS_H
 
 #include <Arduino.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 #include <Wire.h>
 #include <Adafruit_VL53L0X.h>
 //#include <VL53L0X.h>
@@ -28,6 +30,9 @@
 
 // Déclaration des fonctions
 void initSensor();
+void initSensorTask();
+void setOpponentMonitoring(bool enabled);
+bool isOpponentDetected();
 bool readSensors(bool setDebug = false);
 bool readSensor(int sensorNumber, bool setDebug = false);
 uint16_t sensorFilter(uint16_t rawValue, float previousValue);

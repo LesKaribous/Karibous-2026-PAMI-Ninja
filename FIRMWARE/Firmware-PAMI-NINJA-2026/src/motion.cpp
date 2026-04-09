@@ -121,6 +121,7 @@ void setCurrentRot(float _rot){
 
 void setOpponentChecking(bool _opponentChecking){
   opponentChecking = _opponentChecking;
+  setOpponentMonitoring(_opponentChecking);
 }
 
 void setMotionState(int _motionState){
@@ -132,19 +133,14 @@ void processMove(){
   long tempDistance_D = 0;
   long tempDistance_G = 0;
 
-  long distanceToCheck = MIN_DISTANCE_MM;
-  const unsigned long opponentCheckIntervalMs = READ_TIME_PERIOD_MS;
-  unsigned long lastOpponentCheck = 0;
-
   debug("Processing Move...");
   while((motor_D.isRunning() || motor_G.isRunning())&& getMatchState() != PAMI_STOP){
     updateMotors();
-    if (opponentChecking && (millis() - lastOpponentCheck >= opponentCheckIntervalMs)){
+    if (opponentChecking){
       //distanceToCheck = convertStepToDist(motor_D.distanceToGo()); // TODO : Changer pour utiliser l'acceleration ou la vitesse ? 
       //debug ("check at" + String(distanceToCheck) + "mm");
 
-      if (checkOpponent(distanceToCheck)){
-        lastOpponentCheck = millis();
+      if (isOpponentDetected()){
         //debug ("Opponent at" + String(distanceToGo) + "mm");
 
         tempDistance_D = motor_D.distanceToGo();
@@ -161,7 +157,7 @@ void processMove(){
 
         updateMotors();
         while(motor_D.isRunning() || motor_G.isRunning()) updateMotors();
-        while(checkOpponent(distanceToCheck)&& getMatchState() != PAMI_STOP){
+        while(isOpponentDetected()&& getMatchState() != PAMI_STOP){
           updateMatchTime();
           //debug ("Opponent at" + String(distanceToGo) + "mm");
           //readSensors(true);
@@ -175,9 +171,6 @@ void processMove(){
           motor_D.move(tempDistance_D);
           motor_G.move(tempDistance_G);
         }
-      }
-      else {
-        lastOpponentCheck = millis();
       }
     }
   }

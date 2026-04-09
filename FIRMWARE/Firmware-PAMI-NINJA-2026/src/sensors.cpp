@@ -11,6 +11,10 @@ uint16_t sensor3 = 0;
 
 long previousTime = 0;
 bool debugSensor = false; // Mettre son robot en mode debug : oui / Mettre son robot en mode "des bugs" : Non - HistoriCode97 - 03/12/2023
+TaskHandle_t sensorTaskHandle = nullptr;
+volatile bool opponentMonitoringEnabled = false;
+volatile bool opponentDetected = false;
+portMUX_TYPE opponentStateMux = portMUX_INITIALIZER_UNLOCKED;
 
 // Filtrage
 const float alpha = 0.2; // entre 0 (très lissé) et 1 (aucun lissage)
@@ -18,6 +22,48 @@ const int threshold = 200; // valeur max de variation tolérée
 
 // Nouvelles adresses I2C à assigner aux capteurs (différentes de 0x29)
 const uint8_t sensorAddresses[3] = { 0x30, 0x31, 0x32 };
+
+static bool detectOpponentFromLastReadings(uint16_t distance) {
+    if (sensorsState[0] && sensorsValue[0] <= distance) return true;
+    if (sensorsState[1] && sensorsValue[1] <= distance) return true;
+    if (sensorsState[2] && sensorsValue[2] <= distance) return true;
+    return false;
+}
+
+static bool readSensorsNow(bool setDebug)
+{
+    readSensor(0, setDebug);
+    readSensor(1, setDebug);
+    readSensor(2, setDebug);
+
+    bool state = sensorsState[0] && sensorsState[1] && sensorsState[2];
+
+    if (setDebug && state){
+        String str = String(sensorsValue[0])+ "   " + String(sensorsValue[1])+ "   " + String(sensorsValue[2]);
+        debug(str);
+    }
+
+    return state;
+}
+
+static void sensorTaskLoop(void *parameter) {
+    (void)parameter;
+
+    for (;;) {
+        bool detect = false;
+
+        if (opponentMonitoringEnabled) {
+            bool sensorsOk = readSensorsNow(false);
+            if (sensorsOk) detect = detectOpponentFromLastReadings(MIN_DISTANCE_MM);
+        }
+
+        portENTER_CRITICAL(&opponentStateMux);
+        opponentDetected = detect;
+        portEXIT_CRITICAL(&opponentStateMux);
+
+        vTaskDelay(pdMS_TO_TICKS(READ_TIME_PERIOD_MS));
+    }
+}
 
 void initSensor() {
 
@@ -49,6 +95,35 @@ void initSensor() {
   }
 }
 
+void initSensorTask() {
+    if (sensorTaskHandle != nullptr) return;
+
+    xTaskCreatePinnedToCore(
+        sensorTaskLoop,
+        "sensorTask",
+        4096,
+        nullptr,
+        1,
+        &sensorTaskHandle,
+        0
+    );
+}
+
+void setOpponentMonitoring(bool enabled) {
+    portENTER_CRITICAL(&opponentStateMux);
+    opponentMonitoringEnabled = enabled;
+    if (!enabled) opponentDetected = false;
+    portEXIT_CRITICAL(&opponentStateMux);
+}
+
+bool isOpponentDetected() {
+    bool detect;
+    portENTER_CRITICAL(&opponentStateMux);
+    detect = opponentDetected;
+    portEXIT_CRITICAL(&opponentStateMux);
+    return detect;
+}
+
 bool readSensors(bool setDebug)
 {
     bool state = SENSORS_OK;
@@ -56,20 +131,7 @@ bool readSensors(bool setDebug)
     if (millis() - previousTime > READ_TIME_PERIOD_MS)
     {
         previousTime = millis();
-        readSensor(0,setDebug);
-        readSensor(1,setDebug);
-        readSensor(2,setDebug);
-
-        state = sensorsState[0] && sensorsState[1] && sensorsState[2];
-        
-        if (setDebug){
-            if (state == true){
-                String str = String(sensorsValue[0])+ "   " + String(sensorsValue[1])+ "   " + String(sensorsValue[2]);
-                debug(str);
-            }
-            //else debug("ATTENTION");
-        }
-        
+        state = readSensorsNow(setDebug);
     }
     return state;
 }
@@ -107,12 +169,12 @@ bool readSensor(int sensorNumber, bool setDebug){
 
 bool checkOpponent(uint16_t distance)
 {
+    if (sensorTaskHandle != nullptr) return isOpponentDetected();
+
     bool detect = false;
     if (readSensors())
     {
-        if (sensorsState[0] && sensorsValue[0] <= distance) detect = true;
-        if (sensorsState[1] && sensorsValue[0] <= distance) detect = true;
-        if (sensorsState[2] && sensorsValue[2] <= distance) detect = true;
+        detect = detectOpponentFromLastReadings(distance);
     }
     return detect;
 }

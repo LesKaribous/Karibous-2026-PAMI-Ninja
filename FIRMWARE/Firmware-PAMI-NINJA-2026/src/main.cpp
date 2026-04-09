@@ -26,6 +26,7 @@ void setup()
   initIHM();
   initSensor();
   scanI2C();
+  initSensorTask();
   
   initMotion();
   
