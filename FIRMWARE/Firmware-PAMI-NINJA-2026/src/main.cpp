@@ -204,8 +204,8 @@ void strategiePAMI()
     }
     else
     {
-      setMaxSpeed(MAX_SPEED * 1.00f);
-      setAcceleration(MAX_ACCELERATION * 1.00f);
+      setMaxSpeed(MAX_SPEED * 0.80f);
+      setAcceleration(MAX_ACCELERATION * 0.80f);
       armsUp();
       goTo(715, 100);
       goTo(1350, 70);
