@@ -13,8 +13,8 @@
 // Initialisation des variables
 bool team = TEAM_BLUE;
 bool teamSelected = false;
-bool modeDebug = true; // Mettre son robot en mode debug : oui / Mettre son robot en mode "des bugs" : Non - HistoriCode97 - 03/12/2023
-bool modeDebugLCD = true;
+bool modeDebug = false; // Mettre son robot en mode debug : oui / Mettre son robot en mode "des bugs" : Non - HistoriCode97 - 03/12/2023
+bool modeDebugLCD = false;
 byte robotNumber;
 int robotState = UNDEFINED;
 
