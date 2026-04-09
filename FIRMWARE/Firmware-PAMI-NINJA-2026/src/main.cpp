@@ -148,7 +148,9 @@ void datumPosition(int teamColor)
     setCurrentRot(225.0);
 
     // Go to safe position
-      goTo(2285, 80, 180);
+    //goTo(2285, 100);
+
+    armsDown();
   }
   else if (teamColor == TEAM_YELLOW)
   {
@@ -162,7 +164,9 @@ void datumPosition(int teamColor)
     setCurrentRot(315.0);
 
     // Go to safe position
-      goTo(715, 80, 0);
+    //goTo(715, 100);
+
+    armsDown();
   }
 
   setMaxSpeed(MAX_SPEED);
@@ -192,26 +196,28 @@ void match()
 
 void strategiePAMI()
 {
-  setOpponentChecking(false);
+  setOpponentChecking(true);
     if (getTeamColor() == TEAM_BLUE)
     {
       
     }
     else
     {
-      setMaxSpeed(MAX_SPEED * 0.40f);
-      setAcceleration(MAX_ACCELERATION * 0.40f);
-      goTo(715, 80);  // Step 1 - POI startYellow_ninja
-      goTo(1348, 80);
-      goTo(1350, 450);
+      setMaxSpeed(MAX_SPEED * 1.00f);
+      setAcceleration(MAX_ACCELERATION * 1.00f);
+      armsUp();
+      goTo(715, 100);
+      goTo(1350, 70);
+      goTo(1350, 400, 270);
       goTo(1220, 100);
       goTo(1103, 100);
-      goTo(1100, 450);
+      goTo(1100, 400, 270);
       goTo(1000, 150);
       goTo(800, 150, 270);
       armsDown();
-      goTo(800, 450);
+      goTo(800, 400, 270);
+      goTo(800, 300, 270);
       armsUp();
-      goTo(1250, 450, 270);
+      goTo(1250, 400, 270);
     }
 }
