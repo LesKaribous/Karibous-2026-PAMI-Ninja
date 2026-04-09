@@ -5,6 +5,14 @@ Servo servoArmLeft;
 Servo servoArmRight;
 int frequency = 200; // Hz
 
+static void waitWithEyesUpdate(unsigned long durationMs) {
+  unsigned long start = millis();
+  while (millis() - start < durationMs) {
+    updateEyes();
+    delay(10);
+  }
+}
+
 void initActuators() {
     servoArmLeft.setPeriodHertz(frequency);
     servoArmRight.setPeriodHertz(frequency);
@@ -60,19 +68,14 @@ void testArms(){
 }
 
 void armsFiesta() {
-  // Attendre que elapsedTime soit un multiple de 1000
-  while ((millis() - getStartTime()) % 1000 != 0) {
-    bool enableMelody = (millis() - getStartTime()) >= TIME_END_MATCH;
-    if (enableMelody) runMelody();
-    delay(1);
-  }
+
+  updateEyes();
 
   rightUp();
   leftUp();
-  pauseWithMelody(500, (millis() - getStartTime()) >= TIME_END_MATCH);
-
+  waitWithEyesUpdate(1000);
+  
   rightDown();
   leftDown();
-  pauseWithMelody(500, (millis() - getStartTime()) >= TIME_END_MATCH);
+  waitWithEyesUpdate(1000);
 }
-
