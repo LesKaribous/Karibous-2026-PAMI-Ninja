@@ -80,10 +80,15 @@ void disableMotors(){
 }
 
 void go(float _dist){
+  if (_dist > 0.0f) setOpponentDetectionDirection(OPPONENT_DIR_FORWARD);
+  else if (_dist < 0.0f) setOpponentDetectionDirection(OPPONENT_DIR_BACKWARD);
+  else setOpponentDetectionDirection(OPPONENT_DIR_NONE);
+
   long stepValue = convertDistToStep(_dist);
   motor_G.move(stepValue);
   motor_D.move(-stepValue);
   processMove();
+  setOpponentDetectionDirection(OPPONENT_DIR_NONE);
 }
 
 void turn(float _angle){

@@ -14,20 +14,133 @@ bool debugSensor = false; // Mettre son robot en mode debug : oui / Mettre son r
 TaskHandle_t sensorTaskHandle = nullptr;
 volatile bool opponentMonitoringEnabled = false;
 volatile bool opponentDetected = false;
+volatile int opponentDetectionDirection = OPPONENT_DIR_NONE;
 portMUX_TYPE opponentStateMux = portMUX_INITIALIZER_UNLOCKED;
+float filteredSensorValues[3] = {0.0f, 0.0f, 0.0f};
+bool filteredSensorReady[3] = {false, false, false};
+bool filteredForwardDetected = false;
+bool filteredBackwardDetected = false;
+uint8_t forwardDetectCount = 0;
+uint8_t forwardReleaseCount = 0;
+uint8_t backwardDetectCount = 0;
+uint8_t backwardReleaseCount = 0;
 
 // Filtrage
-const float alpha = 0.2; // entre 0 (très lissé) et 1 (aucun lissage)
+const float alpha = 0.5; // entre 0 (très lissé) et 1 (aucun lissage)
 const int threshold = 200; // valeur max de variation tolérée
 
 // Nouvelles adresses I2C à assigner aux capteurs (différentes de 0x29)
 const uint8_t sensorAddresses[3] = { 0x30, 0x31, 0x32 };
 
 static bool detectOpponentFromLastReadings(uint16_t distance) {
-    if (sensorsState[0] && sensorsValue[0] <= distance) return true;
-    if (sensorsState[1] && sensorsValue[1] <= distance) return true;
-    if (sensorsState[2] && sensorsValue[2] <= distance) return true;
+    int direction;
+    portENTER_CRITICAL(&opponentStateMux);
+    direction = opponentDetectionDirection;
+    portEXIT_CRITICAL(&opponentStateMux);
+
+    if (direction == OPPONENT_DIR_FORWARD) {
+        return filteredForwardDetected;
+    }
+    else if (direction == OPPONENT_DIR_BACKWARD) {
+        return filteredBackwardDetected;
+    }
+
     return false;
+}
+
+static void resetZoneFilterState() {
+    filteredForwardDetected = false;
+    filteredBackwardDetected = false;
+    forwardDetectCount = 0;
+    forwardReleaseCount = 0;
+    backwardDetectCount = 0;
+    backwardReleaseCount = 0;
+}
+
+static void resetAllFilters() {
+    for (int i = 0; i < 3; ++i) {
+        filteredSensorValues[i] = 0.0f;
+        filteredSensorReady[i] = false;
+    }
+    resetZoneFilterState();
+}
+
+static void updateFilteredSensorValue(int sensorNumber) {
+    if (!sensorsState[sensorNumber]) {
+        filteredSensorReady[sensorNumber] = false;
+        return;
+    }
+
+    if (!filteredSensorReady[sensorNumber]) {
+        filteredSensorValues[sensorNumber] = sensorsValue[sensorNumber];
+        filteredSensorReady[sensorNumber] = true;
+        return;
+    }
+
+    filteredSensorValues[sensorNumber] = (alpha * sensorsValue[sensorNumber]) + ((1.0f - alpha) * filteredSensorValues[sensorNumber]);
+}
+
+static bool isForwardCandidateDetected() {
+    bool frontLeftDetected = filteredSensorReady[0] && filteredSensorValues[0] <= MIN_DISTANCE_MM;
+    bool frontRightDetected = filteredSensorReady[2] && filteredSensorValues[2] <= MIN_DISTANCE_MM;
+    return frontLeftDetected || frontRightDetected;
+}
+
+static bool isBackwardCandidateDetected() {
+    return filteredSensorReady[1] && filteredSensorValues[1] <= MIN_DISTANCE_MM;
+}
+
+static bool isForwardZoneClear() {
+    bool frontLeftClear = !filteredSensorReady[0] || filteredSensorValues[0] >= RELEASE_DISTANCE_MM;
+    bool frontRightClear = !filteredSensorReady[2] || filteredSensorValues[2] >= RELEASE_DISTANCE_MM;
+    return frontLeftClear && frontRightClear;
+}
+
+static bool isBackwardZoneClear() {
+    return !filteredSensorReady[1] || filteredSensorValues[1] >= RELEASE_DISTANCE_MM;
+}
+
+static void updateZoneDetectionState(bool candidateDetected, bool zoneClear, bool &zoneDetected, uint8_t &detectCount, uint8_t &releaseCount) {
+    if (!zoneDetected) {
+        releaseCount = 0;
+        if (candidateDetected) {
+            if (detectCount < OPPONENT_DETECT_CONFIRMATIONS) detectCount++;
+            if (detectCount >= OPPONENT_DETECT_CONFIRMATIONS) zoneDetected = true;
+        } else {
+            detectCount = 0;
+        }
+        return;
+    }
+
+    detectCount = 0;
+    if (zoneClear) {
+        if (releaseCount < OPPONENT_RELEASE_CONFIRMATIONS) releaseCount++;
+        if (releaseCount >= OPPONENT_RELEASE_CONFIRMATIONS) zoneDetected = false;
+    } else {
+        releaseCount = 0;
+    }
+}
+
+static void updateOpponentFilters() {
+    updateFilteredSensorValue(0);
+    updateFilteredSensorValue(1);
+    updateFilteredSensorValue(2);
+
+    updateZoneDetectionState(
+        isForwardCandidateDetected(),
+        isForwardZoneClear(),
+        filteredForwardDetected,
+        forwardDetectCount,
+        forwardReleaseCount
+    );
+
+    updateZoneDetectionState(
+        isBackwardCandidateDetected(),
+        isBackwardZoneClear(),
+        filteredBackwardDetected,
+        backwardDetectCount,
+        backwardReleaseCount
+    );
 }
 
 static bool readSensorsNow(bool setDebug)
@@ -54,7 +167,14 @@ static void sensorTaskLoop(void *parameter) {
 
         if (opponentMonitoringEnabled) {
             bool sensorsOk = readSensorsNow(false);
-            if (sensorsOk) detect = detectOpponentFromLastReadings(MIN_DISTANCE_MM);
+            if (sensorsOk) {
+                updateOpponentFilters();
+                detect = detectOpponentFromLastReadings(MIN_DISTANCE_MM);
+            } else {
+                resetAllFilters();
+            }
+        } else {
+            resetAllFilters();
         }
 
         portENTER_CRITICAL(&opponentStateMux);
@@ -112,8 +232,26 @@ void initSensorTask() {
 void setOpponentMonitoring(bool enabled) {
     portENTER_CRITICAL(&opponentStateMux);
     opponentMonitoringEnabled = enabled;
-    if (!enabled) opponentDetected = false;
+    if (!enabled) {
+        opponentDetected = false;
+        opponentDetectionDirection = OPPONENT_DIR_NONE;
+    }
     portEXIT_CRITICAL(&opponentStateMux);
+
+    if (!enabled) resetAllFilters();
+}
+
+void setOpponentDetectionDirection(int direction) {
+    portENTER_CRITICAL(&opponentStateMux);
+    opponentDetectionDirection = direction;
+    if (direction == OPPONENT_DIR_NONE) opponentDetected = false;
+    portEXIT_CRITICAL(&opponentStateMux);
+
+    if (direction == OPPONENT_DIR_NONE) {
+        portENTER_CRITICAL(&opponentStateMux);
+        resetZoneFilterState();
+        portEXIT_CRITICAL(&opponentStateMux);
+    }
 }
 
 bool isOpponentDetected() {
@@ -174,7 +312,10 @@ bool checkOpponent(uint16_t distance)
     bool detect = false;
     if (readSensors())
     {
+        updateOpponentFilters();
         detect = detectOpponentFromLastReadings(distance);
+    } else {
+        resetAllFilters();
     }
     return detect;
 }

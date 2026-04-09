@@ -20,18 +20,26 @@
 
 // Opponent detection distances
 #define MIN_DISTANCE_MM 200 // TODO : 300
+#define RELEASE_DISTANCE_MM 260
 #define MAX_DISTANCE_MM 500
 // Sensors limit and parameters
 #define MAX_SENSOR_VALUE 8100 // Strange value at 8190
-#define READ_TIME_PERIOD_MS 250 // Lecture plus espacee pour moins perturber les moteurs
+#define READ_TIME_PERIOD_MS 100
+#define OPPONENT_DETECT_CONFIRMATIONS 1
+#define OPPONENT_RELEASE_CONFIRMATIONS 1
 // Filtrage
 #define NUM_READINGS 9             // Nombre de mesures à faire
 #define OUTLIERS_TO_REMOVE 2       // Nombre de valeurs extrêmes à retirer de chaque côté
+
+#define OPPONENT_DIR_NONE 0
+#define OPPONENT_DIR_FORWARD 1
+#define OPPONENT_DIR_BACKWARD -1
 
 // Déclaration des fonctions
 void initSensor();
 void initSensorTask();
 void setOpponentMonitoring(bool enabled);
+void setOpponentDetectionDirection(int direction);
 bool isOpponentDetected();
 bool readSensors(bool setDebug = false);
 bool readSensor(int sensorNumber, bool setDebug = false);
