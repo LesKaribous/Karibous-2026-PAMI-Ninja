@@ -198,15 +198,27 @@ void match()
 void strategiePAMI()
 {
   setOpponentChecking(true);
-    if (getTeamColor() == TEAM_BLUE)
+  setMaxSpeed(MAX_SPEED * 0.80f);
+  setAcceleration(MAX_ACCELERATION * 0.80f);
+  armsUp();
+  if (getTeamColor() == TEAM_BLUE)
     {
-      
-    }
-    else
-    {
-      setMaxSpeed(MAX_SPEED * 0.80f);
-      setAcceleration(MAX_ACCELERATION * 0.80f);
+      goTo(3000-715, 100);
+      goTo(3000-1350, 70);
+      goTo(3000-1350, 400, 270);
+      goTo(3000-1220, 100);
+      goTo(3000-1103, 100);
+      goTo(3000-1100, 400, 270);
+      goTo(3000-1000, 150);
+      goTo(3000-800, 150, 270);
+      armsDown();
+      goTo(3000-800, 400, 270);
+      goTo(3000-800, 300, 270);
       armsUp();
+      goTo(3000-1250, 400, 270);
+    }
+  else
+    {
       goTo(715, 100);
       goTo(1350, 70);
       goTo(1350, 400, 270);
