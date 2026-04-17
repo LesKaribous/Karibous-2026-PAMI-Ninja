@@ -11,6 +11,7 @@ void waitStart();
 void datumPosition(int teamColor);
 void match();
 void strategiePAMI();
+void datumY(float dist = 50);
 
 void setup()
 {
@@ -139,6 +140,7 @@ void datumPosition(int teamColor)
   enableMotors();
   if (teamColor == TEAM_BLUE)
   {
+    armsMid();
     // Datum at low Speed
     setMaxSpeed(DATUM_SPEED);
     setAcceleration(DATUM_ACCELERATION);
@@ -149,12 +151,12 @@ void datumPosition(int teamColor)
     setCurrentRot(225.0);
 
     // Go to safe position
-    //goTo(2285, 100);
-
-    armsDown();
+    //goTo(getCurrentX()-10, getCurrentY()+10,180.0);
+    goTo(3000-715, 100,180);
   }
   else if (teamColor == TEAM_YELLOW)
   {
+    armsMid();
     // Datum at low Speed
     setMaxSpeed(DATUM_SPEED);
     setAcceleration(DATUM_ACCELERATION);
@@ -164,10 +166,10 @@ void datumPosition(int teamColor)
     setCurrentX(615+DATUM_DISTANCE_MM);
     setCurrentRot(315.0);
 
+  
     // Go to safe position
-    //goTo(715, 100);
-
-    armsDown();
+    //goTo(getCurrentX()+10.0, getCurrentY()+10.0,0.0);
+    goTo(715, 100,0);
   }
 
   setMaxSpeed(MAX_SPEED);
@@ -193,6 +195,22 @@ void match()
   {
     disableMotors(); // Desactive les moteurs
   }
+}
+
+void datumY(float dist)
+{
+  // Datum at low Speed
+  setOpponentChecking(false);
+  setMaxSpeed(DATUM_SPEED);
+  setAcceleration(DATUM_ACCELERATION);
+
+  goTo(getCurrentX(),getCurrentY(),270);
+  go(-dist);
+  setCurrentY(CENTER_POSITION_MM);
+
+  setMaxSpeed(MAX_SPEED);
+  setAcceleration(MAX_ACCELERATION);
+  setOpponentChecking(true);
 }
 
 void strategiePAMI()
@@ -221,16 +239,26 @@ void strategiePAMI()
     {
       goTo(715, 100);
       goTo(1350, 70);
+
+      datumY(30);
+      armsDown();
       goTo(1350, 400, 270);
+      armsUp();
       goTo(1220, 100);
       goTo(1103, 100);
+
+      datumY(80);
+      armsDown();
       goTo(1100, 400, 270);
+      armsUp();
+
       goTo(1000, 150);
-      goTo(800, 150, 270);
+      goTo(800, 150);
+      datumY(100);
       armsDown();
       goTo(800, 400, 270);
-      goTo(800, 300, 270);
       armsUp();
-      goTo(1250, 400, 270);
+      go(-150);
+      goTo(1250, 400, 270+45);
     }
 }

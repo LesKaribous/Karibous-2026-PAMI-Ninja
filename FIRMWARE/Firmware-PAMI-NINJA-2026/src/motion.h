@@ -71,6 +71,10 @@ void setCurrentY(float _y);
 void setCurrentX(float _x);
 void setCurrentRot(float _rot);
 
+float getCurrentY();
+float getCurrentX();
+float getCurrentRot();
+
 void processMove();
 void setOpponentChecking(bool _opponentChecking);
 void setMotionState(int _motionState);

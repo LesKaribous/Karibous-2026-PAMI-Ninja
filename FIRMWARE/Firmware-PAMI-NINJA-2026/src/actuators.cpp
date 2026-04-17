@@ -40,6 +40,14 @@ void rightUp(){
   servoArmRight.write(ARM_UP_RIGHT);
 }
 
+void leftMid(){
+  servoArmLeft.write(ARM_MID_LEFT);
+}
+
+void rightMid(){
+  servoArmRight.write(ARM_MID_RIGHT);
+}
+
 void leftDown(){
   servoArmLeft.write(ARM_DOWN_LEFT);
 }
@@ -52,6 +60,12 @@ void armsUp(){
   leftUp();
   rightUp();
   debug("Arms up");
+}
+
+void armsMid(){
+  leftMid();
+  rightMid();
+  debug("Arms mid");
 }
 
 void armsDown(){
