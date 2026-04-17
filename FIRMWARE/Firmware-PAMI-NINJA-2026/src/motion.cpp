@@ -249,6 +249,18 @@ void convertToPolar(float _x, float _y, float _rot){
   newPolarTarget = true;
 }
 
+void goRelative(float _dist){
+  go(_dist);
+  float rotRad = currentPose.rot * (PI / 180.0f);
+  currentPose.setX(currentPose.x + _dist * cos(rotRad));
+  currentPose.setY(currentPose.y - _dist * sin(rotRad));
+}
+
+void turnRelative(float _angle){
+  turn(_angle);
+  currentPose.setRot(normalizeAngleDegrees(currentPose.rot + _angle));
+}
+
 void goTo(Pose _target){
   goTo(_target.x, _target.y, _target.rot);
 }

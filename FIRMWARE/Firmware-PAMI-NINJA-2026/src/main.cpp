@@ -258,7 +258,7 @@ void strategiePAMI()
       armsDown();
       goTo(800, 400, 270);
       armsUp();
-      go(-150);
+      goRelative(-150);
       goTo(1250, 400, 270+45);
     }
 }

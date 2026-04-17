@@ -87,6 +87,8 @@ long convertAngleToStep(float angle);
 void go(float _dist);
 void turn(float _angle);
 void turnGo(float _angle, float _dist);
+void goRelative(float _dist);
+void turnRelative(float _angle);
 
 // Déplacements absolus
 void goTo(Pose _target);
