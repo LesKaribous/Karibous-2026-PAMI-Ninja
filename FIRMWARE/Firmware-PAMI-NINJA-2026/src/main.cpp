@@ -11,7 +11,7 @@ void waitStart();
 void datumPosition(int teamColor);
 void match();
 void strategiePAMI();
-void datumY(float dist = 50);
+void datumY(float dist, float angle = 270);
 
 void setup()
 {
@@ -197,14 +197,18 @@ void match()
   }
 }
 
-void datumY(float dist)
+void datumY(float dist, float angle)
 {
   // Datum at low Speed
   setOpponentChecking(false);
   setMaxSpeed(DATUM_SPEED);
   setAcceleration(DATUM_ACCELERATION);
 
-  goTo(getCurrentX(),getCurrentY(),270);
+  float delta = angle - getCurrentRot();
+  while (delta > 180.0f)  delta -= 360.0f;
+  while (delta < -180.0f) delta += 360.0f;
+  turnRelative(delta);
+
   go(-dist);
   setCurrentY(CENTER_POSITION_MM);
 
@@ -223,17 +227,29 @@ void strategiePAMI()
     {
       goTo(3000-715, 100);
       goTo(3000-1350, 70);
-      goTo(3000-1350, 400, 270);
+
+      datumY(30,-90);
+      armsDown();
+      goTo(3000-1350, 415, 270);
+      armsUp();
       goTo(3000-1220, 100);
       goTo(3000-1103, 100);
-      goTo(3000-1100, 400, 270);
-      goTo(3000-1000, 150);
-      goTo(3000-800, 150, 270);
+
+      datumY(80,-90);
       armsDown();
-      goTo(3000-800, 400, 270);
-      goTo(3000-800, 300, 270);
+      goTo(3000-1100, 415, 270);
       armsUp();
-      goTo(3000-1250, 400, 270);
+
+      goTo(3000-1000, 150);
+      goTo(3000-800, 150);
+      datumY(120,-90);
+      armsDown();
+      goTo(3000-800, 417, 270);
+      goRelative(-50);
+      goRelative(53);
+      armsUp();
+      goRelative(-150);
+      goTo(3000-1250, 400, 270+45);
     }
   else
     {
@@ -242,21 +258,23 @@ void strategiePAMI()
 
       datumY(30);
       armsDown();
-      goTo(1350, 400, 270);
+      goTo(1350, 415, 270);
       armsUp();
       goTo(1220, 100);
       goTo(1103, 100);
 
       datumY(80);
       armsDown();
-      goTo(1100, 400, 270);
+      goTo(1100, 415, 270);
       armsUp();
 
       goTo(1000, 150);
       goTo(800, 150);
-      datumY(100);
+      datumY(120);
       armsDown();
-      goTo(800, 400, 270);
+      goTo(800, 417, 270);
+      goRelative(-50);
+      goRelative(53);
       armsUp();
       goRelative(-150);
       goTo(1250, 400, 270+45);
