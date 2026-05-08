@@ -1,0 +1,60 @@
+setOpponentChecking(true);
+setMaxSpeed(MAX_SPEED * 0.80f);
+setAcceleration(MAX_ACCELERATION * 0.80f);
+armsUp();
+if (getTeamColor() == TEAM_BLUE)
+{
+    goTo(3000 - 715, 100);
+    goTo(3000 - 1350, 70);
+
+    datumY(30, -90);
+    armsDown();
+    goTo(3000 - 1350, 415, 270);
+    armsUp();
+    goTo(3000 - 1220, 100);
+    goTo(3000 - 1103, 100);
+
+    datumY(80, -90);
+    armsDown();
+    goTo(3000 - 1100, 415, 270);
+    armsUp();
+
+    goTo(3000 - 1000, 150);
+    goTo(3000 - 800, 150);
+    datumY(120, -90);
+    armsDown();
+    goTo(3000 - 800, 417, 270);
+    goRelative(-50);
+    goRelative(53);
+    armsUp();
+    goRelative(-150);
+    goTo(3000 - 1250, 400, 270 + 45);
+}
+else
+{
+    goTo(715, 100);
+    goTo(1350, 70);
+
+    datumY(30);
+    armsDown();
+    goTo(1350, 415, 270);
+    armsUp();
+    goTo(1220, 100);
+    goTo(1103, 100);
+
+    datumY(80);
+    armsDown();
+    goTo(1100, 415, 270);
+    armsUp();
+
+    goTo(1000, 150);
+    goTo(800, 150);
+    datumY(120);
+    armsDown();
+    goTo(800, 417, 270);
+    goRelative(-50);
+    goRelative(53);
+    armsUp();
+    goRelative(-150);
+    goTo(1250, 400, 270 + 45);
+}

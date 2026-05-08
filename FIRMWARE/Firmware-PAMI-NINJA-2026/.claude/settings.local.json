@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-Command python -ErrorAction SilentlyContinue | Select-Object Source; Get-Command python3 -ErrorAction SilentlyContinue | Select-Object Source; Get-ChildItem \"$env:USERPROFILE\\\\.platformio\\\\penv\\\\Scripts\\\\pio.exe\" -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-ChildItem \"$env:USERPROFILE\\\\.platformio\" -ErrorAction SilentlyContinue | Select-Object Name)",
+      "PowerShell(& \"C:\\\\Users\\\\remil\\\\.platformio\\\\penv\\\\Scripts\\\\pio.exe\" pkg install --project-dir \"c:\\\\Users\\\\remil\\\\Documents\\\\GitHub\\\\Karibous-2026-PAMI-Ninja\\\\FIRMWARE\\\\Firmware-PAMI-NINJA-2026\" 2>&1)",
+      "PowerShell($p1 = Get-Content \"C:\\\\Users\\\\remil\\\\.platformio\\\\platforms\\\\espressif32@src-b41c9d33d904496d5ea799f383ec8459\\\\platform.json\" | ConvertFrom-Json; Write-Host \"Version: $\\($p1.version\\)\"; $p1.packages.\"framework-arduinoespressif32\")",
+      "PowerShell($p2 = Get-Content \"C:\\\\Users\\\\remil\\\\.platformio\\\\platforms\\\\espressif32@src-b9e7facf3f970c340e2515eee4d26ac6\\\\platform.json\" | ConvertFrom-Json; Write-Host \"Version: $\\($p2.version\\)\"; $p2.packages.\"framework-arduinoespressif32\")",
+      "PowerShell($p1 = Get-Content \"C:\\\\Users\\\\remil\\\\.platformio\\\\platforms\\\\espressif32@src-b41c9d33d904496d5ea799f383ec8459\\\\platform.json\" | ConvertFrom-Json; $p1.packages | Format-List)",
+      "PowerShell(cmd /c \"dir C:\\\\Users\\\\remil\\\\.platformio\\\\packages\")",
+      "PowerShell(cmd /c \"dir C:\\\\Users\\\\remil\\\\.platformio\\\\packages\\\\framework-arduinoespressif32 /b\")",
+      "PowerShell($pkg = Get-Content \"C:\\\\Users\\\\remil\\\\.platformio\\\\packages\\\\framework-arduinoespressif32\\\\package.json\" | ConvertFrom-Json; Write-Host \"Version: $\\($pkg.version\\)\"; Write-Host \"Name: $\\($pkg.name\\)\")",
+      "PowerShell(cmd /c \"dir C:\\\\Users\\\\remil\\\\.platformio\\\\packages\\\\framework-arduinoespressif32\\\\tools\\\\sdk\\\\esp32s3\\\\bin\")",
+      "PowerShell(cmd /c \"dir C:\\\\Users\\\\remil\\\\.platformio\\\\packages\\\\framework-arduinoespressif32\\\\tools\\\\sdk\\\\esp32s3\\\\include\\\\freertos /b\" 2>&1)",
+      "PowerShell(cmd /c \"dir C:\\\\Users\\\\remil\\\\.platformio\\\\packages\\\\framework-arduinoespressif32\\\\tools\\\\sdk\\\\esp32s3\\\\include\\\\freertos\\\\include /b\" 2>&1)"
+    ]
+  }
+}
