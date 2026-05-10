@@ -231,7 +231,7 @@ void datumY(float dist, float angle)
 
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
-	setOpponentChecking(true);
+	// setOpponentChecking(true);
 }
 
 void datumX(float dist, int color, float angle)
@@ -255,7 +255,7 @@ void datumX(float dist, int color, float angle)
 
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
-	setOpponentChecking(true);
+	// setOpponentChecking(true);
 }
 
 void strategiePAMI()
@@ -304,30 +304,33 @@ void strategiePAMI()
 		armsUp();
 
 		goRelative(-130);
-		datumX(150, TEAM_YELLOW);
+		datumX(155, TEAM_YELLOW);
 		// armsDown();
-		goTo(1100, 280, 0); // Offset Yellow_Fridge01
+		goTo(1120, 325, 0); // Offset Yellow_Fridge01 PUSH 100mm
 		goRelative(-70);
 		// armsUp();
-		goTo(1000, 70); // Return to wall
+		goTo(1120, 70); // Return to wall
+		datumY(30);
+		goRelative(30);
+		datumX(400, TEAM_YELLOW); //Datum to go straight
 
 		goTo(1480, 70);
-		datumY(100);
+		datumY(30);
 		goTo(1480, 225, 180);
 		// armsDown();
-		goTo(1400, 225); // Offset Yellow_Fridge02
+		goTo(1380, 225); // Offset Yellow_Fridge02 PUSH 50mm
 		goRelative(-70);
 		// armsUp();
 		goTo(1450, 70, 180);
 		goTo(1250, 70, 270);
-		datumY(100);
+		// datumY(100);
 		armsDown();
 		goTo(1250, 417); // Push fridge pile
 		goRelative(-50);
 		goRelative(53);
 		armsUp();
 
-		turn(-45);
+		// turn(-45);
 
 		// goTo(1350, 70);
 		// datumY(30);
