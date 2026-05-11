@@ -5,6 +5,7 @@
 #include "actuators.h"
 #include "motion.h"
 #include "match.h"
+#include "ota.h"
 
 void scanI2C();
 void waitStart();
@@ -27,6 +28,10 @@ void setup()
 	delay(1000);
 
 	initIHM();
+
+#ifdef OTA_ENABLED
+	initOTA();
+#endif
 	initSensor();
 	scanI2C();
 	initSensorTask();
