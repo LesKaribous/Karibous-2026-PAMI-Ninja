@@ -89,6 +89,7 @@ void turn(float _angle);
 void turnGo(float _angle, float _dist);
 void goRelative(float _dist);
 void turnRelative(float _angle);
+void align(float _targetAngle);
 
 // Déplacements absolus
 void goTo(Pose _target);
@@ -99,6 +100,8 @@ void goTo(float _x, float _y, float _rot);
 void convertToPolar(Pose _target);
 void convertToPolar(float _x, float _y);
 void convertToPolar(float _x, float _y, float _rot);
+
+void wait(unsigned long _ms);
 
 
 #endif // MOTION_H

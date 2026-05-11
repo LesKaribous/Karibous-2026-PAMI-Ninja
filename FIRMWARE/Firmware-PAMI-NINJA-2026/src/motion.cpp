@@ -261,6 +261,12 @@ void turnRelative(float _angle){
   currentPose.setRot(normalizeAngleDegrees(currentPose.rot + _angle));
 }
 
+void align(float _targetAngle){
+  float delta = normalizeAngleDegrees(_targetAngle - currentPose.rot);
+  turn(delta);
+  currentPose.setRot(_targetAngle);
+}
+
 void goTo(Pose _target){
   goTo(_target.x, _target.y, _target.rot);
 }
@@ -284,4 +290,8 @@ void goTo(float _x, float _y, float _rot){
   turn(targetMove.rotation2);
   currentPose.setRot(_rot);
   newPolarTarget = false;
+}
+
+void wait(unsigned long _ms) {
+  delay(_ms);
 }

@@ -267,86 +267,87 @@ void strategiePAMI()
 	if (getTeamColor() == TEAM_BLUE)
 	{
 		goTo(3000 - 715, 100);
-		goTo(3000 - 1350, 70);
-
-		datumY(30, -90);
-		armsDown();
-		goTo(3000 - 1350, 415, 270);
-		armsUp();
-		goTo(3000 - 1220, 100);
-		goTo(3000 - 1103, 100);
-
-		datumY(80, -90);
-		armsDown();
-		goTo(3000 - 1100, 415, 270);
-		armsUp();
-
-		goTo(3000 - 1000, 150);
 		goTo(3000 - 800, 150);
-		datumY(120, -90);
+
+		align(270);
 		armsDown();
-		goTo(3000 - 800, 417, 270);
+		wait(800);
+		goTo(3000 - 800, 417, 270); // Push 4 pile
 		goRelative(-50);
 		goRelative(53);
 		armsUp();
+
 		goRelative(-150);
-		goTo(3000 - 1250, 400, 270 + 45);
+		// datumX(155, TEAM_BLUE);
+		goTo(3000 - 1120, 275, 180); // Offset Blue_Fridge01 PUSH 100mm
+		goRelative(-70);
+
+		align(270);
+		goRelative(-205); // Return to wall
+
+		datumY(20);
+		goRelative(20);
+
+		align(180);
+		goTo(3000 - 1480, 70); // Go straight
+		datumY(30);
+
+		goTo(3000 - 1480, 225, 0); // Go to side of Blue_Fridge02
+		// armsDown();
+		goTo(3000 - 1400, 225); // Offset Blue_Fridge02 PUSH 50mm
+		goRelative(-70);
+		// armsUp();
+		goTo(3000 - 1450, 70, 0);
+		goTo(3000 - 1250, 70, 270);
+		datumY(20);
+		armsDown();
+		wait(800);
+		goTo(3000 - 1250, 417); // Push fridge pile
+		goRelative(-50);
+		goRelative(53);
+		goRelative(-60);
 	}
 	else
 	{
 		goTo(715, 100);
 		goTo(800, 150);
-		datumY(100);
+
+		align(270);
 		armsDown();
+		wait(800);
 		goTo(800, 417, 270); // Push 4 pile
 		goRelative(-50);
 		goRelative(53);
 		armsUp();
 
-		goRelative(-130);
-		datumX(155, TEAM_YELLOW);
-		// armsDown();
-		goTo(1120, 325, 0); // Offset Yellow_Fridge01 PUSH 100mm
+		goRelative(-150);
+		// datumX(155, TEAM_YELLOW);
+		goTo(1120, 275, 0); // Offset Yellow_Fridge01 PUSH 100mm
 		goRelative(-70);
-		// armsUp();
-		goTo(1120, 70); // Return to wall
-		datumY(30);
-		goRelative(30);
-		datumX(400, TEAM_YELLOW); //Datum to go straight
 
-		goTo(1480, 70);
+		align(270);
+		goRelative(-205); // Return to wall
+
+		datumY(20);
+		goRelative(20);
+
+		align(0);
+		goTo(1480, 70); //Go straight
 		datumY(30);
-		goTo(1480, 225, 180);
+
+		goTo(1480, 225, 180); // Go to side of Yellow_Fridge02
 		// armsDown();
-		goTo(1380, 225); // Offset Yellow_Fridge02 PUSH 50mm
-		goRelative(-70);
+		goTo(1400, 225); // Offset Yellow_Fridge02 PUSH 50mm
+		goRelative(-70); 
 		// armsUp();
 		goTo(1450, 70, 180);
 		goTo(1250, 70, 270);
-		// datumY(100);
+		datumY(20);
 		armsDown();
+		wait(800);
 		goTo(1250, 417); // Push fridge pile
 		goRelative(-50);
 		goRelative(53);
-		armsUp();
-
-		// turn(-45);
-
-		// goTo(1350, 70);
-		// datumY(30);
-		// armsDown();
-		// goTo(1350, 415, 270);
-		// armsUp();
-
-		// goTo(1220, 100);
-		// goTo(1103, 100);
-
-		// datumY(80);
-		// armsDown();
-		// goTo(1100, 415, 270);
-		// armsUp();
-
-		// goTo(1000, 150);
-		// goTo(1250, 400, 270 + 45);
+		goRelative(-60);
 	}
 }
