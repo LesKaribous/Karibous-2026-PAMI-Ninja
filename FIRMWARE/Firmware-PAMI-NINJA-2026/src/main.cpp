@@ -314,39 +314,28 @@ void strategiePAMI()
 	}
 	else
 	{
-		goTo(715, 100);
-		goTo(800, 150);
+		// goTo(715, 70);
 
-		align(270);
-		armsDown();
-		wait(800);
-		goTo(800, 417, 270); // Push 4 pile
-		goRelative(-50);
-		goRelative(53);
-		armsUp();
-
-		goRelative(-150);
-		// datumX(155, TEAM_YELLOW);
-		goTo(1120, 275, 0); // Offset Yellow_Fridge01 PUSH 100mm
-		goRelative(-70);
-
-		align(270);
-		goRelative(-205); // Return to wall
-
-		datumY(20);
-		goRelative(20);
-
-		align(0);
 		goTo(1480, 70); //Go straight
 		datumY(30);
 
 		goTo(1480, 225, 180); // Go to side of Yellow_Fridge02
 		// armsDown();
 		goTo(1400, 225); // Offset Yellow_Fridge02 PUSH 50mm
-		goRelative(-70); 
-		// armsUp();
-		goTo(1450, 70, 180);
-		goTo(1250, 70, 270);
+		goRelative(-50);
+
+		goTo(1450, 70, 180); //Go back to wall
+
+		goTo(970, 70); //Go to side of Yellow_Fridge01
+		datumY(30);
+		goTo(970, 275);
+
+		goTo(1120, 275, 0); // Offset Yellow_Fridge01 PUSH 100mm
+		goRelative(-70);
+
+		goTo(1050,70);
+
+		goTo(1250, 70, 270); //Go to center of fridge pile
 		datumY(20);
 		armsDown();
 		wait(800);
