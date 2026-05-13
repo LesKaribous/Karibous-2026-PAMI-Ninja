@@ -236,7 +236,7 @@ void datumY(float dist, float angle)
 
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
-	// setOpponentChecking(true);
+	setOpponentChecking(true);
 }
 
 void datumX(float dist, int color, float angle)
@@ -260,50 +260,39 @@ void datumX(float dist, int color, float angle)
 
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
-	// setOpponentChecking(true);
+	setOpponentChecking(true);
 }
 
 void strategiePAMI()
 {
-	setOpponentChecking(false);
+	setOpponentChecking(true);
 	setMaxSpeed(MAX_SPEED * 0.80f);
 	setAcceleration(MAX_ACCELERATION * 0.80f);
 	armsUp();
 	if (getTeamColor() == TEAM_BLUE)
 	{
-		goTo(3000 - 715, 100);
-		goTo(3000 - 800, 150);
+		// goTo(3000 - 715, 70);
 
-		align(270);
-		armsDown();
-		wait(800);
-		goTo(3000 - 800, 417, 270); // Push 4 pile
-		goRelative(-50);
-		goRelative(53);
-		armsUp();
-
-		goRelative(-150);
-		// datumX(155, TEAM_BLUE);
-		goTo(3000 - 1120, 275, 180); // Offset Blue_Fridge01 PUSH 100mm
-		goRelative(-70);
-
-		align(270);
-		goRelative(-205); // Return to wall
-
-		datumY(20);
-		goRelative(20);
-
-		align(180);
 		goTo(3000 - 1480, 70); // Go straight
 		datumY(30);
 
 		goTo(3000 - 1480, 225, 0); // Go to side of Blue_Fridge02
 		// armsDown();
 		goTo(3000 - 1400, 225); // Offset Blue_Fridge02 PUSH 50mm
+		goRelative(-50);
+		setOpponentChecking(false);
+		goTo(3000 - 1450, 70, 0); // Go back to wall
+		setOpponentChecking(true);
+		goTo(3000 - 970, 70); // Go to side of Blue_Fridge01
+		datumY(30);
+		goTo(3000 - 970, 275);
+
+		goTo(3000 - 1120, 275, 180); // Offset Blue_Fridge01 PUSH 100mm
 		goRelative(-70);
-		// armsUp();
-		goTo(3000 - 1450, 70, 0);
-		goTo(3000 - 1250, 70, 270);
+		setOpponentChecking(false);
+		goTo(3000 - 1050, 70);
+		setOpponentChecking(true);
+		goTo(3000 - 1250, 70, 270); // Go to center of fridge pile
 		datumY(20);
 		armsDown();
 		wait(800);
@@ -323,18 +312,18 @@ void strategiePAMI()
 		// armsDown();
 		goTo(1400, 225); // Offset Yellow_Fridge02 PUSH 50mm
 		goRelative(-50);
-
+		setOpponentChecking(false);
 		goTo(1450, 70, 180); //Go back to wall
-
+		setOpponentChecking(true);
 		goTo(970, 70); //Go to side of Yellow_Fridge01
 		datumY(30);
 		goTo(970, 275);
 
 		goTo(1120, 275, 0); // Offset Yellow_Fridge01 PUSH 100mm
 		goRelative(-70);
-
+		setOpponentChecking(false);
 		goTo(1050,70);
-
+		setOpponentChecking(true);
 		goTo(1250, 70, 270); //Go to center of fridge pile
 		datumY(20);
 		armsDown();
