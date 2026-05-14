@@ -17,7 +17,7 @@
 #define MAX_SPEED       8000.0
 #define MAX_ACCELERATION    1800.0
 
-#define DATUM_SPEED    5000.0
+#define DATUM_SPEED    4000.0
 #define DATUM_ACCELERATION 500.0
 
 #define STOP_SPEED      25000.0
