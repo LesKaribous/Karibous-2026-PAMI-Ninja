@@ -171,9 +171,13 @@ void datumPosition(int teamColor)
 		// goTo(getCurrentX()-10, getCurrentY()+10,180.0);
 		// goTo(3000 - 715, 100, 180);
 		goRelative(20);
-		align(180);
-		datumX(30, TEAM_BLUE, 180);
+		datumY(40);
+		wait(200);
 		goRelative(20);
+		datumX(40, TEAM_BLUE, 180);
+		wait(200);
+		goRelative(20);
+		align(180);
 	}
 	else if (teamColor == TEAM_YELLOW)
 	{
@@ -191,9 +195,13 @@ void datumPosition(int teamColor)
 		// goTo(getCurrentX()+10.0, getCurrentY()+10.0,0.0);
 		// goTo(715, 100, 0);
 		goRelative(20);
-		align(0);
-		datumX(30, TEAM_YELLOW, 0);
+		datumY(40);
+		wait(200);
 		goRelative(20);
+		datumX(40, TEAM_YELLOW, 0);
+		wait(200);
+		goRelative(20);
+		align(0);
 	}
 
 	setMaxSpeed(MAX_SPEED);
@@ -241,6 +249,8 @@ void datumY(float dist, float angle)
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
 	setOpponentChecking(true);
+
+	wait(200);
 }
 
 void datumX(float dist, int color, float angle)
@@ -265,6 +275,8 @@ void datumX(float dist, int color, float angle)
 	setMaxSpeed(MAX_SPEED);
 	setAcceleration(MAX_ACCELERATION);
 	setOpponentChecking(true);
+	
+	wait(200);
 }
 
 void strategiePAMI()
@@ -276,57 +288,64 @@ void strategiePAMI()
 	if (getTeamColor() == TEAM_BLUE)
 	{
 		// goTo(3000 - 715, 70);
-
+		goTo(3000 - 1225, 80, 270); // Go straight
+		datumY(40);
+		goTo(3000 - 1225, 80, 180); // Go back to path
 		goTo(3000 - 1480, 80); // Go straight
-		datumY(30);
+		datumY(40);
 		wait(100);
 
 		goTo(3000 - 1480, 225, 0); // Go to side of Blue_Fridge02
 		// armsDown();
 		goTo(3000 - 1385, 225); // Offset Blue_Fridge02 PUSH 50mm
 		goRelative(-50);
-		setOpponentChecking(false);
+		align(270);
+		// setOpponentChecking(false);
+		goTo(3000 - 1435, 80); // Go back to wall
+		datumY(40);
 		goTo(3000 - 1435, 80, 0); // Go back to wall
-		setOpponentChecking(true);
+		// setOpponentChecking(true);
 		goTo(3000 - 970, 80); // Go to side of Blue_Fridge01
-		datumY(30);
-		wait(100);
+		datumY(40);
 		goTo(3000 - 970, 275);
 
 		goTo(3000 - 1100, 275, 180); // Offset Blue_Fridge01 PUSH 100mm
-		goRelative(-80);
+		goRelative(-50);
 		setOpponentChecking(false);
 		goTo(3000 - 1050, 80);
 		setOpponentChecking(true);
 		goTo(3000 - 1250, 80, 270); // Go to center of fridge pile
-		datumY(20);
-		wait(100);
+		datumY(40);
 		armsDown();
 		wait(800);
 		goTo(3000 - 1250, 417); // Push fridge pile
 		goRelative(-50);
 		goRelative(53);
-		goRelative(-60);
-		align(-135);
+		// goRelative(-60);
+		// align(-135);
 	}
 	else
 	{
 		// goTo(715, 70);
-
+		goTo(1225, 80, 270); //Go straight
+		datumY(40);
+		goTo(1225, 80, 0); //Go back to path
 		goTo(1480, 80); //Go straight
-		datumY(30);
+		datumY(40);
 		wait(100);
 
 		goTo(1480, 225, 180); // Go to side of Yellow_Fridge02
 		// armsDown();
 		goTo(1385, 225); // Offset Yellow_Fridge02 PUSH 50mm
 		goRelative(-50);
-		setOpponentChecking(false);
+		align(270);
+		// setOpponentChecking(false);
+		goTo(1435, 80); //Go back to wall
+		datumY(40);
 		goTo(1435, 80, 180); //Go back to wall
-		setOpponentChecking(true);
+		// setOpponentChecking(true);
 		goTo(970, 80); //Go to side of Yellow_Fridge01
-		datumY(30);
-		wait(100);
+		datumY(40);
 		goTo(970, 275);
 
 		goTo(1100, 275, 0); // Offset Yellow_Fridge01 PUSH 100mm
@@ -335,14 +354,13 @@ void strategiePAMI()
 		goTo(1050,80);
 		setOpponentChecking(true);
 		goTo(1250, 80, 270); //Go to center of fridge pile
-		datumY(30);
-		wait(100);
+		datumY(40);
 		armsDown();
 		wait(800);
 		goTo(1250, 417); // Push fridge pile
 		goRelative(-50);
 		goRelative(53);
-		goRelative(-60);
-		align(-45);
+		// goRelative(-60);
+		// align(-45);
 	}
 }
